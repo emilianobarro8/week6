@@ -122,12 +122,11 @@ function getScore() {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                    alert("Score sent successfully");
+                    console.log("Score sent successfully");   
                 } else {
-                    alert("Error trying to send the score");
+                    console.log("Error trying to send the score");   
                 }
-            };
-        alert("https://jsonplaceholder.typicode.com/todos/"+score);    
+            };   
         xhttp.open("GET", "https://jsonplaceholder.typicode.com/todos/"+score, true);
         xhttp.send();
     }                        
@@ -255,6 +254,8 @@ gameScene.paint = function (ctx) {
 gameScene.act = function () {
     var i = 0,
         l = 0;
+    var v_get; 
+
     if (!pause) {
         // GameOver Reset
         if (gameover) {
