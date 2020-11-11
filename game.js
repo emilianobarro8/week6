@@ -25,18 +25,20 @@
     score = 0,
     frutaesp = 0,
     iBody = new Image(),
+    iBody2 = new Image(),
     iFood = new Image(),
     iFood2 = new Image(),
     aEat = new Audio(),
-    aDie = new Audio();
+    aDie = new Audio(),
+    pacman = new Audio();
     
 window.requestAnimationFrame = (function () {
-        return window.requestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        function (callback) {
-            window.setTimeout(callback, 17);
-        };
+    return window.requestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    function (callback) {
+        window.setTimeout(callback, 17);
+    };
 }());
 
 document.addEventListener('keydown', function (evt) {
@@ -47,146 +49,148 @@ document.addEventListener('keydown', function (evt) {
 }, false);
 
 function Rectangle(x, y, width, height) {
-            this.x = (x === undefined) ? 0 : x;
-            this.y = (y === undefined) ? 0 : y;
-            this.width = (width === undefined) ? 0 : width;
-            this.height = (height === undefined) ? this.width : height;
-            }
-            Rectangle.prototype = {
-            constructor: Rectangle,
-            intersects: function (rect) {
+    this.x = (x === undefined) ? 0 : x;
+    this.y = (y === undefined) ? 0 : y;
+    this.width = (width === undefined) ? 0 : width;
+    this.height = (height === undefined) ? this.width : height;
+    }
+    Rectangle.prototype = {
+        constructor: Rectangle,
+        intersects: function (rect) {
             if (rect === undefined) {
-            window.console.warn('Missing parameters on function intersects');
+                window.console.warn('Missing parameters on function intersects');
             } else {
-            return (this.x < rect.x + rect.width &&
-            this.x + this.width > rect.x &&
-            this.y < rect.y + rect.height &&
-            this.y + this.height > rect.y);
-            }
-            },    
-
-            fill: function (ctx) {
-                if (ctx === undefined) {
-                    window.console.warn('Missing parameters on function fill');
+                return (this.x < rect.x + rect.width &&
+                    this.x + this.width > rect.x &&
+                    this.y < rect.y + rect.height &&
+                    this.y + this.height > rect.y);
+                }
+            }, 
+        fill: function (ctx) {
+            if (ctx === undefined) {
+                window.console.warn('Missing parameters on function fill');
+            } else {
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                }
+            },
+        drawImage: function (ctx, img) {
+            if (img === undefined) {
+                window.console.warn('Missing parameters on function drawImage');
+            } else {
+                if (img.width) {
+                    ctx.drawImage(img, this.x, this.y);
                 } else {
-                    ctx.fillRect(this.x, this.y, this.width, this.height);
-                    }
-                },
-                drawImage: function (ctx, img) {
-                if (img === undefined) {
-                    window.console.warn('Missing parameters on function drawImage');
-                } else {
-                    if (img.width) {
-                        ctx.drawImage(img, this.x, this.y);
-                    } else {
-                        ctx.strokeRect(this.x, this.y, this.width, this.height);
-                        }
+                    ctx.strokeRect(this.x, this.y, this.width, this.height);
                     }
                 }
-            };
+            }
+};
             
 function Scene() {
-        this.id = scenes.length;
-        scenes.push(this);
-    }
+    this.id = scenes.length;
+    scenes.push(this);
+}
 
 Scene.prototype = {
-        constructor: Scene,
-        load: function () {},
-        paint: function (ctx) {},
-        act: function () {}
-        };
+    constructor: Scene,
+    load: function () {},
+    paint: function (ctx) {},
+    act: function () {}
+};
                     
 function loadScene(scene) {
-                    currentScene = scene.id;
-                    scenes[currentScene].load();
-                    }
+    currentScene = scene.id;
+    scenes[currentScene].load();
+}
                     
 function random(max) {
-                        return ~~(Math.random() * max);
-                     }
+    return ~~(Math.random() * max);
+}
                         
 function addHighscore(score) {
-                        posHighscore = 0;
-                        while (highscores[posHighscore] > score && posHighscore < highscores.length) {
-                            posHighscore += 1;
-                        }
-                        highscores.splice(posHighscore, 0, score);
-                        if (highscores.length > 10) {
-                            highscores.length = 10;
-                        }
-                        localStorage.highscores = highscores.join(',');
-                        }
+    posHighscore = 0;
+    while (highscores[posHighscore] > score && posHighscore < highscores.length) {
+        posHighscore += 1;
+        }
+    highscores.splice(posHighscore, 0, score);
+    if (highscores.length > 10) {
+            highscores.length = 10;
+        }
+    localStorage.highscores = highscores.join(',');
+}
 
 function getScore() {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                    console.log("Score sent successfully");   
-                } else {
-                    console.log("Error trying to send the score");   
-                }
-            };   
-        xhttp.open("GET", "https://jsonplaceholder.typicode.com/todos/"+score, true);
-        xhttp.send();
-    }                        
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log("Score sent successfully");   
+        } else {
+            console.log("Error trying to send the score");   
+            }
+        };   
+    xhttp.open("GET", "https://jsonplaceholder.typicode.com/todos/"+score, true);
+    xhttp.send();
+}                        
                         
 function repaint() {
-                        window.requestAnimationFrame(repaint);
-                        if (scenes.length) {
-                            scenes[currentScene].paint(ctx);
-                        }
-                    }
+    window.requestAnimationFrame(repaint);
+    if (scenes.length) {
+        scenes[currentScene].paint(ctx);
+        }
+    }
 
 function run() {
-                        setTimeout(run, 50);
-                        if (scenes.length) {
-                                scenes[currentScene].act();
-                            }
-                        }
+    setTimeout(run, 50); 
+    if (scenes.length) {
+        scenes[currentScene].act();        
+        }
+}
 
 function init() {
-                            // Get canvas and context
-                            canvas = document.getElementById('canvas');
-                            ctx = canvas.getContext('2d');
-                            // Load assets
-                            iBody.src = 'assets/body.png';
-                            iFood.src = 'assets/fruit.png';
-                            iFood2.src = 'assets/fruit2.png';
-                            aEat.src = 'assets/chomp.oga';
-                            aDie.src = 'assets/dies.oga';
-                            // Create food
-                            food = new Rectangle(80, 80, 10, 10);
-// Load saved highscores
+    // Get canvas and context
+    canvas = document.getElementById('canvas');
+    ctx = canvas.getContext('2d');
+    // Load assets
+    iBody.src = 'assets/body.png';
+    iBody2.src = 'assets/pacm.png';
+    iFood.src = 'assets/fruit.png';
+    iFood2.src = 'assets/fruit2.png';
+    aEat.src = 'assets/chomp.oga';
+    aDie.src = 'assets/dies.oga';
+    pacman.src = 'assets/pacman.oga';
+    // Create food
+    food = new Rectangle(80, 80, 10, 10);
+    // Load saved highscores
     if (localStorage.highscores) {
         highscores = localStorage.highscores.split(',');
-    }
-    // Start game
+        }
+    // Start game        
     run();
     repaint();
-    }
+    
+}
 
 // Main Scene
 mainScene = new Scene();
     
 mainScene.paint = function (ctx) {
-        // Clean canvas
-        ctx.fillStyle = '#555';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        // Draw title
-        ctx.fillStyle = '#fff';
-        ctx.textAlign = 'center';
-        ctx.fillText('SNAKE', 150, 60);
-        ctx.fillText('Press Enter', 150, 90);
-        };
+    // Clean canvas
+    ctx.fillStyle = '#555';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Draw title        
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText('SNAKE-PACMAN', 150, 60);
+    ctx.fillText('Press Enter', 150, 90);
+};
        
 mainScene.act = function () {
-        // Load next scene
-        if (lastPress === KEY_ENTER) {
-            loadScene(highscoresScene);
-            lastPress = null;
+    // Load next scene
+    if (lastPress === KEY_ENTER) {
+        loadScene(highscoresScene);
+        lastPress = null;
         }
-    };
+};
 
 // Game Scene
 gameScene = new Scene();
@@ -194,7 +198,7 @@ gameScene = new Scene();
 gameScene.load = function () {
     score = 0;
     dir = 1;
-    body.length = 0;
+    body.length = 0;    
     body.push(new Rectangle(40, 40, 10, 10));
     body.push(new Rectangle(0, 0, 10, 10));
     body.push(new Rectangle(0, 0, 10, 10));
@@ -211,7 +215,8 @@ gameScene.paint = function (ctx) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     // Draw player
     ctx.strokeStyle = '#0f0';
-    for (i = 0, l = body.length; i < l; i += 1) {
+    body[0].drawImage(ctx, iBody2);
+    for (i = 1, l = body.length; i < l; i += 1) {
         body[i].drawImage(ctx, iBody);
     }
 
@@ -252,6 +257,7 @@ gameScene.act = function () {
     var v_get; 
 
     if (!pause) {
+        pacman.play();
         // GameOver Reset
         if (gameover) {
             loadScene(highscoresScene);
@@ -263,16 +269,20 @@ gameScene.act = function () {
     }
     // Change Direction
     if (lastPress === KEY_UP && dir !== 2) {
-        dir = 0;
+        dir = 0;        
+        iBody2.src = 'assets/pacm2.png';
     }
     if (lastPress === KEY_RIGHT && dir !== 3) {
         dir = 1;
+        iBody2.src = 'assets/pacm.png';
     }
     if (lastPress === KEY_DOWN && dir !== 0) {
         dir = 2;
+        iBody2.src = 'assets/pacm1.png';
     }
     if (lastPress === KEY_LEFT && dir !== 1) {
         dir = 3;
+        iBody2.src = 'assets/pacm3.png';
         }
         // Move Head
     if (dir === 0) {
@@ -329,8 +339,8 @@ gameScene.act = function () {
     // Pause/Unpause
     if (lastPress === KEY_ENTER) {
             pause = !pause;
-            lastPress = null;
-            }
+            lastPress = null;            
+        }
 };
 
 // Highscore Scene
